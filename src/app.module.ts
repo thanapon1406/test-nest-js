@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { DevicesModule } from './devices/devices.module';
+import { KafkaService } from './kafka.service';
+
 import { ThrottlerModule } from '@nestjs/throttler';
 import { IamModule } from './iam/iam.module';
 import * as Yup from 'yup';
@@ -51,8 +54,10 @@ import * as Yup from 'yup';
     }),
     IamModule,
     UsersModule,
+    DevicesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, KafkaService],
 })
-export class AppModule {}
+export class AppModule {
+}
