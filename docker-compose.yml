@@ -1,12 +1,24 @@
 version: '3'
 services:
+  elasticsearch:
+    container_name: elasticsearch
+    image: 'docker.elastic.co/elasticsearch/elasticsearch:7.12.0'
+    ports:
+      - '9300:9300'
+      - '9200:9200'
+    environment:
+      discovery.type: single-node
+    restart: always
+    networks:
+      - dev-net
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.2
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-
+    networks:
+      - dev-net  
   broker:
     image: confluentinc/cp-kafka:7.3.2
     container_name: broker
@@ -24,6 +36,8 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - dev-net  
   db:
     image: mysql:8.0
     restart: always
@@ -32,3 +46,9 @@ services:
       MYSQL_DATABASE: nest
     ports:
       - "3306:3306"
+    networks:
+      - dev-net  
+networks:
+  dev-net:
+    name: dev-net
+    driver: bridge      
