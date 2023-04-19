@@ -3,7 +3,8 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { configureSwaggerDocs } from './helpers/configure-swagger-docs.helper';
-import { KafkaClient, Consumer } from 'kafka-node';
+// import { KafkaClient, Consumer } from 'kafka-node';
+import { Kafka } from 'kafkajs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,13 +29,23 @@ async function bootstrap() {
     methods: 'GET,POST,PUT,PATCH,DELETE',
     credentials: true,
   });
-  const kafkaClient = new KafkaClient({ kafkaHost: 'localhost:9092' });
-  const kafkaConsumer = new Consumer(kafkaClient, [{ topic: 'test-topic' }, { topic: 'test-topic2' }], {
-    autoCommit: false
-  });
 
-  kafkaConsumer.on('message', function (message) {
-    Logger.log('Received message: ', message);
+  // Subscribe to the Kafka topic here
+  const kafka = new Kafka({
+    clientId: 'my-app',
+    brokers: ['localhost:9092'],
+  });
+  const consumer = kafka.consumer({ groupId: 'test-group' });
+  await consumer.connect();
+  await consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
+  await consumer.run({
+    eachMessage: async ({ topic, partition, message }) => {
+      Logger.log({
+        partition,
+        offset: message.offset,
+        value: message.value.toString(),
+      });
+    },
   });
 
   const port = configService.get<number>('NODE_API_PORT') || 3000;

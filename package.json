@@ -39,6 +39,7 @@
     "express-basic-auth": "^1.2.1",
     "handlebars": "^4.7.7",
     "kafka-node": "^5.0.0",
+    "kafkajs": "^2.2.4",
     "mysql2": "^3.1.2",
     "nodemailer": "^6.9.1",
     "reflect-metadata": "^0.1.13",
