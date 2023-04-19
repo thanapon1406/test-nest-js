@@ -29,7 +29,7 @@ async function bootstrap() {
     credentials: true,
   });
   const kafkaClient = new KafkaClient({ kafkaHost: 'localhost:9092' });
-  const kafkaConsumer = new Consumer(kafkaClient, [{ topic: 'test-topic' }], {
+  const kafkaConsumer = new Consumer(kafkaClient, [{ topic: 'test-topic' }, { topic: 'test-topic2' }], {
     autoCommit: false
   });
 

@@ -10,7 +10,8 @@ import { KafkaService } from './kafka.service';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { IamModule } from './iam/iam.module';
 import * as Yup from 'yup';
-
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
+import { ESService } from './elasticsearch.service'
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -55,9 +56,12 @@ import * as Yup from 'yup';
     IamModule,
     UsersModule,
     DevicesModule,
+    ElasticsearchModule.register({
+      node: 'http://localhost:9200',
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService, KafkaService],
+  providers: [AppService, KafkaService, ESService],
 })
 export class AppModule {
 }
