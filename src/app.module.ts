@@ -11,7 +11,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { IamModule } from './iam/iam.module';
 import * as Yup from 'yup';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
-import { ESService } from './elasticsearch.service'
+import { ElasticsearchService } from './elasticsearch.service'
+import { ElasticsearchController } from './elasticsearch/elasticsearch.controller';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -57,11 +58,11 @@ import { ESService } from './elasticsearch.service'
     UsersModule,
     DevicesModule,
     ElasticsearchModule.register({
-      node: 'http://localhost:9200',
+      node: 'http://localhost:9200'
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService, KafkaService, ESService],
+  controllers: [AppController, ElasticsearchController],
+  providers: [AppService, KafkaService, ElasticsearchService],
 })
 export class AppModule {
 }

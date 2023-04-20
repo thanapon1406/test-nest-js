@@ -1,13 +1,24 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { ESService } from '../elasticsearch.service';
+import { ElasticsearchService } from '../elasticsearch.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('elasticsearch')
 @Controller('elasticsearch')
-export class MyController {
-  constructor(private readonly ESService: ESService) {}
+export class ElasticsearchController {
+  constructor(private readonly ElasticsearchService: ElasticsearchService) { }
 
   @Get()
+  async searchAll(@Query('index') index: string) {
+    const results = await this.ElasticsearchService.searchAll(index);
+    return { results };
+  }
+
+  @Get("/search")
   async search(@Query('index') index: string, @Query('term') term: string) {
-    const results = await this.ESService.search(index, term);
+    const body = {
+      name: term,
+    }
+    const results = await this.ElasticsearchService.search(index, body);
     return { results };
   }
 }

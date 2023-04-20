@@ -1,6 +1,4 @@
-import { KafkaClient, Producer } from 'kafka-node';
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@nestjs/common';
 import { Kafka } from 'kafkajs';
 
 @Injectable()

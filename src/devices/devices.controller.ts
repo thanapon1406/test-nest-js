@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Delete,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { DevicesService } from './devices.service';
 import { DeviceDto } from './dto/device.dto';
@@ -17,14 +18,16 @@ import { IDevices } from './interfaces/devices.interface';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../iam/login/decorators/auth-guard.decorator';
 import { AuthType } from '../iam/login/enums/auth-type.enum';
-import { KafkaService } from '../../src/kafka.service';
+import { KafkaService } from '../kafka.service';
+import { ElasticsearchService } from '../elasticsearch.service';
 @ApiTags('devices')
 @AuthGuard(AuthType.Bearer)
 @Controller('devices')
 export class DevicesController {
   constructor(
     private readonly devicesService: DevicesService,
-    private readonly kafkaService: KafkaService
+    private readonly kafkaService: KafkaService,
+    private readonly elasticsearchService: ElasticsearchService,
   ) { }
 
   @Get()
@@ -47,10 +50,17 @@ export class DevicesController {
         eventType: 'DEVICE_CREATED',
         payload: deviceDto,
       };
+
       try {
         await this.kafkaService.sendMessage('test-topic', kafkaPayload);
       } catch (err) {
         throw new BadRequestException(err, 'Error: Kafka not working!');
+      }
+
+      try {
+        await this.elasticsearchService.indexDocument("deviced", deviceDto);
+      } catch (err) {
+        throw new BadRequestException(err, 'Error: Elasticsearch not working!');
       }
 
       return {
